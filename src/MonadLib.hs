@@ -106,4 +106,6 @@ data Continuation r a = Continuation { runCont :: (a -> r) -> r }
 instance Monad (Continuation r) where
   unit = Continuation . (&)
 
-  flatten _ = _
+  flatten  = _
+
+  map (Continuation runner) f = Continuation (\cont -> runner (cont . f))
