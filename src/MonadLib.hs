@@ -68,9 +68,6 @@ instance Monad (Either a) where
 -- Reader monad
 data Reader env a = Reader { runReader :: env -> a }
 
-ask :: Reader env env
-ask = Reader id
-
 instance Monad (Reader env) where
   unit = Reader . const
 
@@ -106,6 +103,7 @@ data Continuation r a = Continuation { runCont :: (a -> r) -> r }
 instance Monad (Continuation r) where
   unit = Continuation . (&)
 
-  flatten  = _
+  flatten (Continuation runC1) = Continuation
+    (\f -> runC1 (\(Continuation runC2) -> runC2 f))
 
-  map (Continuation runner) f = Continuation (\cont -> runner (cont . f))
+  map (Continuation runC) f = Continuation (\cont -> runC (cont . f))
