@@ -1,6 +1,6 @@
-module MonadLib (Monad, Option, Id, Either, Reader, Writer, State) where
+module MonadLib (Monad, Option, Id, Either, Reader, Writer, State, unit, flatten, map, flatMap) where
 
-import Prelude ((++), (.), ($), const, id, Monoid, mempty, (<>))
+import Prelude ((++), (.), ($), const, Monoid, mempty, (<>))
 import Data.Tuple (swap)
 import Data.Function ((&))
 
@@ -98,7 +98,7 @@ instance Monad (State state) where
   map comp f = State (mapSnd f . runComp comp)
 
 -- Continuation monad
-data Continuation r a = Continuation { runCont :: (a -> r) -> r }
+data Continuation r a = Continuation ((a -> r) -> r)
 
 instance Monad (Continuation r) where
   unit = Continuation . (&)
